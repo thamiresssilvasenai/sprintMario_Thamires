@@ -1,28 +1,45 @@
 <?php
-/**
- * Endpoint para obter o TOP 10 do ranking
- */
-header('Content-Type: application/json; charset=utf-8');
+
 require_once 'conexao.php';
 
+header(
+    'Content-Type: application/json; charset=utf-8'
+);
+
 try {
-    $stmt = $pdo->prepare("
-        SELECT id, nome, personagem, pontos, DATE_FORMAT(data_registro, '%d/%m/%Y %H:%i') as data 
-        FROM ranking 
-        ORDER BY pontos DESC, id ASC 
+
+    $stmt = $pdo->query("
+        SELECT
+            id,
+            nome,
+            personagem,
+            pontos,
+            DATE_FORMAT(
+                data_registro,
+                '%d/%m/%Y %H:%i'
+            ) AS data
+        FROM ranking
+        ORDER BY pontos DESC, id ASC
         LIMIT 10
     ");
-    $stmt->execute();
-    $ranking = $stmt->fetchAll();
+
+    $ranking =
+        $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     echo json_encode([
         'status' => 'success',
         'ranking' => $ranking
     ]);
+
 } catch (PDOException $e) {
+
     http_response_code(500);
+
     echo json_encode([
         'status' => 'error',
-        'message' => 'Erro ao consultar ranking: ' . $e->getMessage()
+        'message' =>
+            'Erro ao carregar ranking.',
+        'ranking' => []
     ]);
 }
+?>

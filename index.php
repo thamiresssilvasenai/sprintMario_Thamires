@@ -36,6 +36,7 @@ try {
                 <span class="label">JOGADOR:</span>
                 <span class="value" id="hud-player-name">---</span>
             </div>
+
             <div class="score-info">
                 <span class="label">PONTOS:</span>
                 <span class="value" id="score-display">0</span>
@@ -48,9 +49,9 @@ try {
         </header>
 
         
-    <main class="game-board" id="game-board">
+        <main class="game-board" id="game-board">
 
-        <div class="clouds" id="clouds">☁️</div>
+            <div class="clouds" id="clouds">☁️</div>
 
             <div class="character" id="player-char">
                 <img src="assets/monica.png" alt="Mônica">
@@ -58,132 +59,244 @@ try {
 
             <div class="obstacle" id="obstacle">🧪</div>
 
-                <img src="assets/clouds.png" class="clouds" alt="Nuvens">
+            <img src="assets/clouds.png" class="clouds" alt="Nuvens">
 
-                <img src="assets/pipe.png" class="pipe" alt="Cano">
+            <img src="assets/moeda.png" class="coin" id="coin" alt="Moeda Bônus">
 
-                <img src="assets/moeda.png" class="coin" id="coin" alt="Moeda Bônus">
+            <div class="game-obstacle" id="game-obstacle">
+                <img src="assets/pedra.png" alt="Pedra">
+            </div>
 
-                <div class="game-obstacle" id="game-obstacle">
-                    <img src="assets/pedra.png" alt="Pedra">
-                </div>
+            <span class="jump-tip" id="jump-tip">
+                Pressione ESPAÇO ou clique para pular
+            </span>
 
-                <span class="jump-tip" id="jump-tip">
-                    Pressione ESPAÇO ou clique para pular
-                </span>
-        </div>
-    </main>
+        </main>
         
 
-    <!-- 1. TELA DE INÍCIO / INSERIR NOME E SELECIONAR PERSONAGEM -->
-    <div class="modal-overlay active" id="start-modal">
-        <div class="modal-card">
-            <div class="modal-header">
-                <h1 class="game-title">TURMA JUMP</h1>
-                <p class="game-subtitle">Escolha seu herói, desvie dos obstáculos e dispute o topo do ranking!</p>
-            </div>
-
-            <form class="start-form" id="start-form">
-                <div class="input-group">
-                    <label for="player-input">DIGITE SEU NOME:</label>
-                    <input 
-                        type="text" 
-                        id="player-input" 
-                        placeholder="Ex: Seu Nome" 
-                        maxlength="30" 
-                        required 
-                        autocomplete="off"
-                        autofocus
-                    >
+        <!-- 1. TELA DE INÍCIO / INSERIR NOME E SELECIONAR PERSONAGEM -->
+        <div class="modal-overlay active" id="start-modal">
+            <div class="modal-card">
+                <div class="modal-header">
+                    <h1 class="game-title">TURMA JUMP</h1>
+                    <p class="game-subtitle">
+                        Escolha seu herói, desvie dos obstáculos e dispute o topo do ranking!
+                    </p>
                 </div>
 
-                <div class="input-group">
-                    <label>ESCOLHA SEU PERSONAGEM:</label>
-                    <div class="char-grid">
-                        <label class="char-card active">
-                            <input type="radio" name="personagem" value="monica" checked>
-                            <span class="char-icon">👧🏻</span>
-                            <span class="char-title">Mônica</span>
-                        </label>
-                        <label class="char-card">
-                            <input type="radio" name="personagem" value="magali">
-                            <span class="char-icon">🍉</span>
-                            <span class="char-title">Magali</span>
-                        </label>
-                        <label class="char-card">
-                            <input type="radio" name="personagem" value="cascao">
-                            <span class="char-icon">🌧️</span>
-                            <span class="char-title">Cascão</span>
-                        </label>
+                <form class="start-form" id="start-form">
+
+                    <div class="input-group">
+                        <label for="player-input">DIGITE SEU NOME:</label>
+
+                        <input 
+                            type="text" 
+                            id="player-input" 
+                            placeholder="Ex: Seu Nome" 
+                            maxlength="30" 
+                            required 
+                            autocomplete="off"
+                            autofocus
+                        >
                     </div>
+
+                    <div class="input-group">
+                        <label>ESCOLHA SEU PERSONAGEM:</label>
+
+                        <div class="char-grid">
+
+                            <label class="char-card active">
+                                <input type="radio" name="personagem" value="monica" checked>
+                                <span class="char-icon">👧🏻</span>
+                                <span class="char-title">Mônica</span>
+                            </label>
+
+                            <label class="char-card">
+                                <input type="radio" name="personagem" value="magali">
+                                <span class="char-icon">🍉</span>
+                                <span class="char-title">Magali</span>
+                            </label>
+
+                            <label class="char-card">
+                                <input type="radio" name="personagem" value="cascao">
+                                <span class="char-icon">🌧️</span>
+                                <span class="char-title">Cascão</span>
+                            </label>
+
+                        </div>
+                    </div>
+
+                    <div class="modal-actions">
+
+                        <button 
+                            type="submit" 
+                            class="btn btn-primary" 
+                            id="btn-start"
+                        >
+                            INICIAR JOGO
+                        </button>
+
+                        <button 
+                            type="button" 
+                            class="btn btn-secondary" 
+                            id="btn-view-ranking"
+                        >
+                            VER RANKING
+                        </button>
+
+                    </div>
+
+                </form>
+
+                <div class="server-status" id="server-status">
+                    <span class="status-dot online"></span> 
+                    Conectado ao MySQL
                 </div>
+
+            </div>
+        </div>
+
+
+        <!-- 2. TELA DE GAME OVER & RANKING -->
+        <div class="modal-overlay" id="gameover-modal">
+
+            <div class="modal-card gameover-card">
+
+                <div class="modal-header">
+
+                    <h2 class="gameover-title">GAME OVER</h2>
+
+                    <div class="final-score-box">
+
+                        <div class="final-score-label">
+                            SUA PONTUAÇÃO
+                        </div>
+
+                        <div 
+                            class="final-score-num" 
+                            id="final-score-value"
+                        >
+                            0
+                        </div>
+
+                        <div 
+                            class="save-status" 
+                            id="save-status-msg"
+                        ></div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Tabela com o TOP 10 -->
+                <div class="ranking-container">
+
+                    <h3 class="ranking-title">
+                        🏆 TOP 10 MELHORES PONTUAÇÕES
+                    </h3>
+
+                    <div class="table-wrapper">
+
+                        <table class="ranking-table">
+
+                            <thead>
+                                <tr>
+                                    <th>POS</th>
+                                    <th>JOGADOR</th>
+                                    <th>HERÓI</th>
+                                    <th>PONTUAÇÃO</th>
+                                </tr>
+                            </thead>
+
+                            <tbody id="ranking-body">
+
+                                <?php if (!empty($rankingInicial)): ?>
+
+                                    <?php foreach ($rankingInicial as $i => $row): ?>
+
+                                        <tr>
+
+                                            <td class="ranking-pos">
+                                                <?= 
+                                                    $i === 0 
+                                                        ? '🥇 1º' 
+                                                        : (
+                                                            $i === 1 
+                                                                ? '🥈 2º' 
+                                                                : (
+                                                                    $i === 2 
+                                                                        ? '🥉 3º' 
+                                                                        : ($i + 1) . 'º'
+                                                                )
+                                                        ) 
+                                                ?>
+                                            </td>
+
+                                            <td>
+                                                <strong>
+                                                    <?= htmlspecialchars($row['nome']) ?>
+                                                </strong>
+                                            </td>
+
+                                            <td>
+                                                <?= ucfirst(htmlspecialchars($row['personagem'] ?? 'monica')) ?>
+                                            </td>
+
+                                            <td>
+                                                <?= (int)$row['pontos'] ?> pts
+                                            </td>
+
+                                        </tr>
+
+                                    <?php endforeach; ?>
+
+                                <?php else: ?>
+
+                                    <tr>
+                                        <td colspan="4" class="loading-cell">
+                                            Nenhuma pontuação gravada ainda. Jogue para ser o 1º!
+                                        </td>
+                                    </tr>
+
+                                <?php endif; ?>
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                </div>
+
 
                 <div class="modal-actions">
-                    <button type="submit" class="btn btn-primary" id="btn-start">INICIAR JOGO</button>
-                    <button type="button" class="btn btn-secondary" id="btn-view-ranking">VER RANKING</button>
-                </div>
-            </form>
 
-            <div class="server-status" id="server-status">
-                <span class="status-dot online"></span> Conectado ao MySQL
+                    <button 
+                        type="button" 
+                        class="btn btn-primary" 
+                        id="btn-restart"
+                    >
+                        JOGAR NOVAMENTE
+                    </button>
+
+                    <button 
+                        type="button" 
+                        class="btn btn-secondary" 
+                        id="btn-change-player"
+                    >
+                        TROCAR JOGADOR
+                    </button>
+
+                </div>
+
             </div>
+
         </div>
-    </div>
 
-    <!-- 2. TELA DE GAME OVER & RANKING -->
-    <div class="modal-overlay" id="gameover-modal">
-        <div class="modal-card gameover-card">
-            <div class="modal-header">
-                <h2 class="gameover-title">GAME OVER</h2>
-                <div class="final-score-box">
-                    <div class="final-score-label">SUA PONTUAÇÃO</div>
-                    <div class="final-score-num" id="final-score-value">0</div>
-                    <div class="save-status" id="save-status-msg"></div>
-                </div>
-            </div>
-
-            <!-- Tabela com o TOP 10 -->
-            <div class="ranking-container">
-                <h3 class="ranking-title">🏆 TOP 10 MELHORES PONTUAÇÕES</h3>
-                <div class="table-wrapper">
-                    <table class="ranking-table">
-                        <thead>
-                            <tr>
-                                <th>POS</th>
-                                <th>JOGADOR</th>
-                                <th>HERÓI</th>
-                                <th>PONTUAÇÃO</th>
-                            </tr>
-                        </thead>
-                        <tbody id="ranking-body">
-                            <?php if (!empty($rankingInicial)): ?>
-                                <?php foreach ($rankingInicial as $i => $row): ?>
-                                    <tr>
-                                        <td class="ranking-pos">
-                                            <?= $i === 0 ? '🥇 1º' : ($i === 1 ? '🥈 2º' : ($i === 2 ? '🥉 3º' : ($i + 1) . 'º')) ?>
-                                        </td>
-                                        <td><strong><?= htmlspecialchars($row['nome']) ?></strong></td>
-                                        <td><?= ucfirst(htmlspecialchars($row['personagem'] ?? 'monica')) ?></td>
-                                        <td><?= (int)$row['pontos'] ?> pts</td>
-                                    </tr>
-                                <?php endforeach; ?>
-                            <?php else: ?>
-                                <tr>
-                                    <td colspan="4" class="loading-cell">Nenhuma pontuação gravada ainda. Jogue para ser o 1º!</td>
-                                </tr>
-                            <?php endif; ?>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <div class="modal-actions">
-                <button type="button" class="btn btn-primary" id="btn-restart">JOGAR NOVAMENTE</button>
-                <button type="button" class="btn btn-secondary" id="btn-change-player">TROCAR JOGADOR</button>
-            </div>
-        </div>
     </div>
 
     <script src="js/script.js" defer></script>
+
 </body>
 </html>

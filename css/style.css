@@ -41,7 +41,9 @@ body {
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
 }
 
-.player-info, .score-info {
+.player-info,
+.score-info,
+.world-info {
     display: flex;
     align-items: center;
     gap: 10px;
@@ -72,12 +74,12 @@ body {
     margin: 0 auto;
     position: relative;
     overflow: hidden;
-    background: linear-gradient(#87ceeb, #e0f6ff);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    background: url('../assets/fundo-turma.png') center center / cover no-repeat;
+    box-shadow: 0 10px 30px rgba(57, 2, 2, 0.5);
     cursor: pointer;
 }
 
-/* Elementos do Jogo */
+/* Cano */
 .pipe {
     position: absolute;
     bottom: 0;
@@ -85,12 +87,16 @@ body {
     right: -80px;
 }
 
+/* ================================
+   PERSONAGEM
+   ================================ */
+
 .character {
-    width: 100px;
-    height: 100px;
+    width: 80px;
+    height: 80px;
     position: absolute;
-    bottom: 0;
-    left: 20px;
+    bottom: 20px;
+    left: 40px;
     z-index: 10;
 }
 
@@ -101,6 +107,7 @@ body {
     display: block;
 }
 
+/* Nuvens */
 .clouds {
     position: absolute;
     width: 550px;
@@ -108,7 +115,7 @@ body {
     right: -550px;
 }
 
-/* Dica de pulo na tela */
+/* Dica de pulo */
 .jump-tip {
     position: absolute;
     bottom: 40px;
@@ -121,7 +128,7 @@ body {
     transition: opacity 0.3s;
 }
 
-/* Animações ativas durante o jogo */
+/* Animações durante o jogo */
 .game-board.running .pipe {
     animation: pipe-animation 2.5s infinite linear;
 }
@@ -130,44 +137,67 @@ body {
     animation: clouds-animation 18s infinite linear;
 }
 
-.jump {
+/* ================================
+   PULO DO PERSONAGEM
+   ================================ */
+
+.character.jump {
     animation: jump-animation 600ms ease-out;
 }
 
+@keyframes jump-animation {
+
+    0% {
+        bottom: 20px;
+    }
+
+    40% {
+        bottom: 180px;
+    }
+
+    60% {
+        bottom: 180px;
+    }
+
+    100% {
+        bottom: 20px;
+    }
+}
+
+/* ================================
+   ANIMAÇÃO DO CANO
+   ================================ */
+
 @keyframes pipe-animation {
+
     from {
         right: -80px;
     }
+
     to {
         right: 100%;
     }
 }
 
-@keyframes jump-animation {
-    0% {
-        bottom: 0;
-    }
-    40% {
-        bottom: 160px;
-    }
-    50% {
-        bottom: 160px;
-    }
-    100% {
-        bottom: 0;
-    }
-}
+/* ================================
+   ANIMAÇÃO DAS NUVENS
+   ================================ */
 
 @keyframes clouds-animation {
+
     from {
         right: -550px;
     }
+
     to {
         right: 100%;
     }
 }
 
-/* Modais / Telas Sobrepostas */
+/* ================================
+   MODAIS
+   ================================ */
+
 .modal-overlay {
     position: fixed;
     top: 0;
@@ -196,7 +226,9 @@ body {
     width: 100%;
     max-width: 480px;
     text-align: center;
-    box-shadow: 0 0 30px rgba(229, 37, 33, 0.4), 0 15px 40px rgba(0, 0, 0, 0.7);
+    box-shadow:
+        0 0 30px rgba(229, 37, 33, 0.4),
+        0 15px 40px rgba(0, 0, 0, 0.7);
 }
 
 .modal-header {
@@ -208,7 +240,9 @@ body {
     color: #ffce00;
     font-size: 20px;
     line-height: 1.5;
-    text-shadow: 3px 3px #e52521, 6px 6px #000000;
+    text-shadow:
+        3px 3px #e52521,
+        6px 6px #000000;
     margin-bottom: 12px;
 }
 
@@ -217,7 +251,10 @@ body {
     color: #a4b1cd;
 }
 
-/* Formulário de Início */
+/* ================================
+   FORMULÁRIO
+   ================================ */
+
 .start-form {
     display: flex;
     flex-direction: column;
@@ -256,7 +293,10 @@ body {
     box-shadow: 0 0 10px rgba(255, 204, 0, 0.3);
 }
 
-/* Botões */
+/* ================================
+   BOTÕES
+   ================================ */
+
 .modal-actions {
     display: flex;
     flex-direction: column;
@@ -304,7 +344,10 @@ body {
     color: #ffffff;
 }
 
-/* Status do Laragon */
+/* ================================
+   STATUS DO LARAGON
+   ================================ */
+
 .server-status {
     margin-top: 20px;
     font-size: 11px;
@@ -333,7 +376,10 @@ body {
     box-shadow: 0 0 8px #ef4444;
 }
 
-/* Tela de Game Over & Ranking */
+/* ================================
+   GAME OVER
+   ================================ */
+
 .gameover-card {
     max-width: 540px;
 }
@@ -367,7 +413,10 @@ body {
     text-shadow: 2px 2px #000;
 }
 
-/* Tabela de Ranking */
+/* ================================
+   RANKING
+   ================================ */
+
 .ranking-container {
     margin-bottom: 20px;
 }
@@ -391,6 +440,7 @@ body {
 .table-wrapper::-webkit-scrollbar {
     width: 6px;
 }
+
 .table-wrapper::-webkit-scrollbar-thumb {
     background: #3b4468;
     border-radius: 4px;
@@ -447,44 +497,91 @@ body {
     color: #10b981;
 }
 
+/* ================================
+   ANIMAÇÃO DOS MODAIS
+   ================================ */
+
 @keyframes fadeIn {
+
     from {
         opacity: 0;
         transform: scale(0.96);
     }
+
     to {
         opacity: 1;
         transform: scale(1);
     }
 }
 
-/* Responsividade */
+/* ================================
+   RESPONSIVIDADE
+   ================================ */
+
 @media (max-width: 600px) {
+
     .character {
-    width: 100px;
-    height: 100px;
+        width: 80px;
+        height: 80px;
+    }
+
+    .hud-bar {
+        padding: 10px;
+    }
+
+    .label {
+        font-size: 9px;
+    }
+
+    .value {
+        font-size: 11px;
+    }
 }
-    
-}
+
+/* ================================
+   OBSTÁCULO
+   ================================ */
+
 .game-obstacle {
     position: absolute;
-    bottom: 0;
+    width: 65px;
+    height: 65px;
+    bottom: 20px;
     right: -100px;
-    font-size: 55px;
     z-index: 9;
 }
+
 .game-obstacle img {
-    width: 60px;
-    height: 60px;
+    width: 100%;
+    height: 100%;
     object-fit: contain;
     display: block;
 }
+
+/* ================================
+   MOEDA
+   ================================ */
+
+.coin {
+    position: absolute;
+    width: 45px;
+    height: 45px;
+    object-fit: contain;
+    right: -60px;
+    bottom: 140px;
+    z-index: 8;
+}
+
+/* ================================
+   ANIMAÇÃO DO OBSTÁCULO
+   ================================ */
 
 .game-board.running .game-obstacle {
     animation: obstacle-animation 2.2s infinite linear;
 }
 
 @keyframes obstacle-animation {
+
     from {
         right: -100px;
     }
@@ -492,4 +589,4 @@ body {
     to {
         right: 100%;
     }
-} 
+}

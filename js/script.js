@@ -1,43 +1,56 @@
-
 /**
  * TURMA JUMP
  * Mônica, Magali e Cascão
- */
+ /** */
+document.addEventListener('DOMContentLoaded', function () {
 
-document.addEventListener('DOMContentLoaded', () => {
-
-    // ==========================================
+    // ================================
     // ELEMENTOS DO JOGO
-    // ==========================================
+    // ================================
 
-    const player = document.getElementById('player-char');
-    const pipe = document.querySelector('.pipe');
-    const gameObstacle = document.getElementById('game-obstacle');
     const gameBoard = document.getElementById('game-board');
-    const clouds = document.querySelector('.clouds');
+    const player = document.getElementById('player-char');
+    const playerImage = player ? player.querySelector('img') : null;
 
-    const hudPlayerName = document.getElementById('hud-player-name');
+    const gameObstacle = document.getElementById('game-obstacle');
+    const coin = document.getElementById('coin');
+
     const scoreDisplay = document.getElementById('score-display');
     const worldDisplay = document.getElementById('world-display');
+    const hudPlayerName = document.getElementById('hud-player-name');
     const jumpTip = document.getElementById('jump-tip');
 
+    // ================================
+    // MODAIS
+    // ================================
+
     const startModal = document.getElementById('start-modal');
+    const gameoverModal = document.getElementById('gameover-modal');
+
+    // ================================
+    // FORMULÁRIO
+    // ================================
+
     const startForm = document.getElementById('start-form');
     const playerInput = document.getElementById('player-input');
 
+    const btnStart = document.getElementById('btn-start');
     const btnViewRanking = document.getElementById('btn-view-ranking');
-
-    const gameoverModal = document.getElementById('gameover-modal');
-    const finalScoreValue = document.getElementById('final-score-value');
-    const saveStatusMsg = document.getElementById('save-status-msg');
-    const rankingBody = document.getElementById('ranking-body');
 
     const btnRestart = document.getElementById('btn-restart');
     const btnChangePlayer = document.getElementById('btn-change-player');
 
-    // ==========================================
+    // ================================
+    // RANKING
+    // ================================
+
+    const rankingBody = document.getElementById('ranking-body');
+    const finalScoreValue = document.getElementById('final-score-value');
+    const saveStatusMsg = document.getElementById('save-status-msg');
+
+    // ================================
     // PERSONAGENS
-    // ==========================================
+    // ================================
 
     const characters = {
         monica: 'assets/monica.png',
@@ -47,28 +60,28 @@ document.addEventListener('DOMContentLoaded', () => {
         cascão: 'assets/Cascão.png'
     };
 
-    // ==========================================
+    // ================================
     // MUNDOS
-    // ==========================================
+    // ================================
 
     const worlds = [
         {
             name: 'Mundo 1',
-            background: 'linear-gradient(#87ceeb, #e0f6ff)'
+            background: "url('assets/fundo-turma.png') center center / cover no-repeat"
         },
         {
             name: 'Mundo 2',
-            background: 'linear-gradient(#f7b267, #ffe6b8)'
+            background: "url('assets/fundo-turma.png') center center / cover no-repeat"
         },
         {
             name: 'Mundo 3',
-            background: 'linear-gradient(#7b8cff, #d9dcff)'
+            background: "url('assets/fundo-turma.png') center center / cover no-repeat"
         }
     ];
 
-    // ==========================================
+    // ================================
     // VARIÁVEIS
-    // ==========================================
+    // ================================
 
     let currentPlayer = '';
     let currentCharacter = 'monica';
@@ -88,9 +101,9 @@ document.addEventListener('DOMContentLoaded', () => {
     let coinElement = null;
     let coinCollected = false;
 
-    // ==========================================
+    // ================================
     // PERSONAGEM SELECIONADO
-    // ==========================================
+    // ================================
 
     function getSelectedCharacter() {
 
@@ -98,160 +111,89 @@ document.addEventListener('DOMContentLoaded', () => {
             'input[name="personagem"]:checked'
         );
 
-        if (!selected) {
-            return 'monica';
-        }
-
-        const value = String(selected.value || '')
-            .trim()
-            .toLowerCase();
-
-        return characters[value] ? value : 'monica';
+        return selected
+            ? selected.value
+            : 'monica';
     }
 
-    // ==========================================
-    // COLOCAR PERSONAGEM NA TELA
-    // ==========================================
+    // ================================
+    // IMAGEM DO PERSONAGEM
+    // ================================
 
     function setPlayerImage() {
 
-        if (!player) return;
-
-        player.innerHTML = '';
-
-        const img = document.createElement('img');
-
-        img.src = characters[currentCharacter] || characters.monica;
-
-        img.alt = currentCharacter;
-
-        img.style.width = '100%';
-        img.style.height = '100%';
-        img.style.objectFit = 'contain';
-
-        player.appendChild(img);
-    }
-
-    // ==========================================
-    // ATUALIZAR MUNDO
-    // ==========================================
-
-    function updateWorld() {
-
-        const newWorld = Math.min(
-            3,
-            Math.floor(score / 100) + 1
-        );
-
-        if (newWorld === world) {
+        if (!playerImage) {
             return;
         }
 
-        world = newWorld;
-        if (worldDisplay) {
-            worldDisplay.textContent = world;
-        }
+        const image =
+            characters[currentCharacter] ||
+            characters.monica;
 
-        gameBoard.style.background =
-            worlds[world - 1].background;
+        playerImage.src = image;
+
+        playerImage.alt =
+            formatCharacter(currentCharacter);
     }
 
-    // ==========================================
-    // AUMENTAR VELOCIDADE
-    // ==========================================
+    // ================================
+    // NOME DO PERSONAGEM
+    // ================================
+
+    function formatCharacter(character) {
+
+        const names = {
+            monica: 'Mônica',
+            'mônica': 'Mônica',
+            magali: 'Magali',
+            cascao: 'Cascão',
+            cascão: 'Cascão'
+        };
+
+        return names[character] || 'Mônica';
+    }
+
+    // ================================
+    // ATUALIZAR MUNDO
+    // ================================
+
+    function updateWorld() {
+
+        if (!gameBoard) {
+            return;
+        }
+
+        const currentWorld =
+            worlds[world - 1] || worlds[0];
+
+        gameBoard.style.background =
+            currentWorld.background;
+
+        if (worldDisplay) {
+            worldDisplay.textContent =
+                world;
+        }
+    }
+
+    // ================================
+    // VELOCIDADE
+    // ================================
 
     function updateSpeed() {
 
-        // Quanto maior a pontuação,
-        // mais rápido o obstáculo fica.
-
-        speed = Math.max(
-            1.2,
-            2.5 - Math.floor(score / 50) * 0.2
-        );
-
-        if (pipe) {
-            pipe.style.animationDuration =
-                speed + 's';
-        }
-
-        if (clouds) {
-            clouds.style.animationDuration =
-                Math.max(6, speed * 10) + 's';
-        }
+        speed =
+            1.6 +
+            Math.floor(score / 100) * 0.15;
     }
 
-    // ==========================================
+    // ================================
     // CRIAR MOEDA
-    // ==========================================
+    // ================================
 
     function createCoin() {
 
-        if (coinElement) {
-            coinElement.remove();
-        }
-
-        coinCollected = false;
-
-        coinElement = document.createElement('img');
-
-        coinElement.src = 'assets/moeda.png';
-
-        coinElement.className = 'game-coin';
-
-        coinElement.style.position = 'absolute';
-        coinElement.style.width = '45px';
-        coinElement.style.height = '45px';
-        coinElement.style.objectFit = 'contain';
-
-        coinElement.style.right = '-60px';
-
-        coinElement.style.bottom =
-            (90 + Math.random() * 150) + 'px';
-
-        coinElement.style.zIndex = '8';
-
-        gameBoard.appendChild(coinElement);
-
-        coinElement.animate(
-            [
-                { right: '-60px' },
-                { right: '100%' }
-            ],
-            {
-                duration: 3000,
-                iterations: Infinity,
-                easing: 'linear'
-            }
-        );
-    }
-
-    // ==========================================
-    // RESETAR ELEMENTOS
-    // ==========================================
-
-    function resetElements() {
-
-        if (pipe) {
-            pipe.style.animation = '';
-            pipe.style.right = '-80px';
-        }
-
-        if (player) {
-            player.style.animation = '';
-            player.style.bottom = '0px';
-            player.classList.remove('jump');
-        }
-
-        if (gameObstacle) {
-            gameObstacle.style.animation = '';
-            gameObstacle.style.right = '-100px';
-        }
-
-        setPlayerImage();
-
-        if (clouds) {
-            clouds.style.animation = '';
+        if (!gameBoard || !isPlaying) {
+            return;
         }
 
         if (coinElement) {
@@ -259,24 +201,110 @@ document.addEventListener('DOMContentLoaded', () => {
             coinElement = null;
         }
 
+        coinElement =
+            document.createElement('img');
+
+        coinElement.src =
+            'assets/moeda.png';
+
+        coinElement.alt =
+            'Moeda';
+
+        coinElement.className =
+            'coin';
+
+        coinElement.style.display =
+            'block';
+
+        coinElement.style.right =
+            '-60px';
+
+        coinElement.style.bottom =
+            (100 + Math.random() * 100) + 'px';
+
+        gameBoard.appendChild(
+            coinElement
+        );
+
         coinCollected = false;
 
-        if (jumpTip) {
-            jumpTip.style.opacity = '1';
-        }
+        coinElement.animate(
+            [
+                {
+                    right: '-60px'
+                },
+                {
+                    right: '100%'
+                }
+            ],
+            {
+                duration: 3000,
+                iterations: 1,
+                easing: 'linear'
+            }
+        );
+
+        setTimeout(function () {
+
+            if (
+                coinElement &&
+                !coinCollected &&
+                coinElement.parentNode
+            ) {
+                coinElement.remove();
+                coinElement = null;
+            }
+
+        }, 3200);
     }
 
-    // ==========================================
+    // ================================
+    // RESETAR ELEMENTOS
+    // ================================
+
+    function resetElements() {
+
+        if (gameObstacle) {
+
+            gameObstacle.style.animation =
+                '';
+
+            gameObstacle.style.right =
+                '-100px';
+
+            gameObstacle.style.bottom =
+                '20px';
+        }
+
+        if (coinElement) {
+
+            coinElement.remove();
+
+            coinElement =
+                null;
+        }
+
+        if (coin) {
+
+            coin.style.display =
+                'block';
+
+            coin.style.right =
+                '-60px';
+        }
+
+        coinCollected =
+            false;
+    }
+
+    // ================================
     // INICIAR JOGO
-    // ==========================================
+    // ================================
 
     function startGame() {
 
-        clearInterval(gameLoop);
-        clearInterval(scoreLoop);
-
-        if (jumpTimer) {
-            clearTimeout(jumpTimer);
+        if (!gameBoard) {
+            return;
         }
 
         score = 0;
@@ -284,54 +312,116 @@ document.addEventListener('DOMContentLoaded', () => {
         world = 1;
         speed = 1.6;
 
-        currentCharacter = getSelectedCharacter();
+        isPlaying = true;
+
+        currentCharacter =
+            getSelectedCharacter();
+
+        setPlayerImage();
 
         resetElements();
 
-        gameBoard.style.background =
-            worlds[0].background;
+        updateWorld();
 
-        createCoin();
+        updateSpeed();
 
-        isPlaying = true;
+        if (scoreDisplay) {
+            scoreDisplay.textContent =
+                score;
+        }
 
-        scoreDisplay.textContent = '0';
+        if (hudPlayerName) {
+            hudPlayerName.textContent =
+                currentPlayer || '---';
+        }
 
-        hudPlayerName.textContent =
-            currentPlayer || 'Jogador';
+        if (gameoverModal) {
+            gameoverModal.classList.remove(
+                'active'
+            );
+        }
 
-        gameBoard.classList.add('running');
+        if (startModal) {
+            startModal.classList.remove(
+                'active'
+            );
+        }
 
-        // ======================================
-        // PONTUAÇÃO
-        // ======================================
-
-        scoreLoop = setInterval(() => {
-
-            if (!isPlaying) return;
-
-            score++;
-
-            scoreDisplay.textContent = score;
-
-            updateWorld();
-            updateSpeed();
-
-        }, 100);
-
-        // ======================================
-        // COLISÃO
-        // ======================================
-
-        gameLoop = setInterval(
-            checkCollision,
-            20
+        gameBoard.classList.add(
+            'running'
         );
+
+        if (jumpTip) {
+            jumpTip.style.display =
+                'none';
+        }
+
+        if (saveStatusMsg) {
+            saveStatusMsg.textContent =
+                '';
+        }
+
+        // ============================
+        // PONTUAÇÃO
+        // ============================
+
+        clearInterval(scoreLoop);
+
+        scoreLoop =
+            setInterval(function () {
+
+                if (!isPlaying) {
+                    return;
+                }
+
+                score++;
+
+                updateSpeed();
+
+                if (scoreDisplay) {
+                    scoreDisplay.textContent =
+                        score;
+                }
+
+                if (score >= 200) {
+                    world = 3;
+                } else if (score >= 100) {
+                    world = 2;
+                } else {
+                    world = 1;
+                }
+
+                updateWorld();
+
+            }, 100);
+
+        // ============================
+        // MOEDAS
+        // ============================
+
+        clearTimeout(gameLoop);
+
+        function coinLoop() {
+
+            if (!isPlaying) {
+                return;
+            }
+
+            createCoin();
+
+            gameLoop =
+                setTimeout(
+                    coinLoop,
+                    4500
+                );
+        }
+
+        coinLoop();
     }
 
-    // ==========================================
+    // ================================
     // PULO
-    // ==========================================
+    // ================================
 
     function jump() {
 
@@ -345,42 +435,42 @@ document.addEventListener('DOMContentLoaded', () => {
 
         player.classList.add('jump');
 
-        if (jumpTip) {
-            jumpTip.style.opacity = '0';
-        }
+        clearTimeout(jumpTimer);
 
-        jumpTimer = setTimeout(() => {
+        jumpTimer =
+            setTimeout(function () {
 
-            player.classList.remove('jump');
+                player.classList.remove('jump');
 
-        }, 500);
+            }, 600);
     }
 
-    // ==========================================
-    // DETECTAR COLISÃO
-    // ==========================================
+    // ================================
+    // COLISÃO
+    // ================================
 
-    function rectanglesCollide(a, b) {
+    function rectanglesCollide(rect1, rect2) {
 
-        return !(
-            a.right < b.left ||
-            a.left > b.right ||
-            a.bottom < b.top ||
-            a.top > b.bottom
+        return (
+            rect1.left < rect2.right &&
+            rect1.right > rect2.left &&
+            rect1.top < rect2.bottom &&
+            rect1.bottom > rect2.top
         );
     }
 
     function checkCollision() {
 
-        if (!isPlaying || !player || !pipe || !gameObstacle) {
+        if (
+            !isPlaying ||
+            !player ||
+            !gameObstacle
+        ) {
             return;
         }
 
         const playerRect =
             player.getBoundingClientRect();
-
-        const pipeRect =
-            pipe.getBoundingClientRect();
 
         const playerHitbox = {
 
@@ -400,31 +490,28 @@ document.addEventListener('DOMContentLoaded', () => {
                 playerRect.bottom
         };
 
-        const pipeHitbox = {
+        const obstacleRect =
+            gameObstacle.getBoundingClientRect();
+
+        const obstacleHitbox = {
 
             left:
-                pipeRect.left +
-                pipeRect.width * 0.12,
+                obstacleRect.left + 5,
 
             right:
-                pipeRect.right -
-                pipeRect.width * 0.12,
+                obstacleRect.right - 5,
 
             top:
-                pipeRect.top,
+                obstacleRect.top + 5,
 
             bottom:
-                pipeRect.bottom
+                obstacleRect.bottom - 5
         };
-
-        // ======================================
-        // COLISÃO COM CANO
-        // ======================================
 
         if (
             rectanglesCollide(
                 playerHitbox,
-                pipeHitbox
+                obstacleHitbox
             )
         ) {
 
@@ -432,33 +519,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
             return;
         }
-
-        // ======================================
-        // COLISÃO COM MOEDA
-        // ======================================
-
-        if (gameObstacle) {
-
-    const obstacleRect =
-        gameObstacle.getBoundingClientRect();
-
-    const obstacleHitbox = {
-        left: obstacleRect.left + 5,
-        right: obstacleRect.right - 5,
-        top: obstacleRect.top + 5,
-        bottom: obstacleRect.bottom - 5
-    };
-
-    if (
-        rectanglesCollide(
-            playerHitbox,
-            obstacleHitbox
-        )
-    )   {
-            gameOver();
-            return;
-        }
-    }
 
         if (
             coinElement &&
@@ -481,14 +541,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 score += 20;
 
-                scoreDisplay.textContent = score;
+                if (scoreDisplay) {
+                    scoreDisplay.textContent =
+                        score;
+                }
 
-                coinElement.style.display = 'none';
+                coinElement.style.display =
+                    'none';
 
-                setTimeout(() => {
+                setTimeout(function () {
 
                     if (isPlaying) {
-
                         createCoin();
                     }
 
@@ -497,9 +560,18 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // ==========================================
+    // ================================
+    // VERIFICAR COLISÃO
+    // ================================
+
+    setInterval(
+        checkCollision,
+        30
+    );
+
+    // ================================
     // GAME OVER
-    // ==========================================
+    // ================================
 
     function gameOver() {
 
@@ -509,127 +581,208 @@ document.addEventListener('DOMContentLoaded', () => {
 
         isPlaying = false;
 
-        clearInterval(gameLoop);
         clearInterval(scoreLoop);
 
-        if (jumpTimer) {
-            clearTimeout(jumpTimer);
+        clearTimeout(gameLoop);
+
+        clearTimeout(jumpTimer);
+
+        if (gameBoard) {
+            gameBoard.classList.remove(
+                'running'
+            );
         }
 
-        gameBoard.classList.remove('running');
-
-        if (pipe) {
-            pipe.style.animation = 'none';
+        if (gameObstacle) {
+            gameObstacle.style.animation =
+                'none';
         }
 
-        if (player) {
-            player.style.animation = 'none';
+        if (coinElement) {
+            coinElement.remove();
+            coinElement = null;
         }
 
         if (finalScoreValue) {
-            finalScoreValue.textContent = score;
+            finalScoreValue.textContent =
+                score;
         }
+
+        salvarPontuacao();
+
+        if (gameoverModal) {
+            gameoverModal.classList.add(
+                'active'
+            );
+        }
+
+        carregarRanking();
+    }
+
+    // ================================
+    // SALVAR RANKING
+    // ================================
+
+    function salvarPontuacao() {
 
         if (saveStatusMsg) {
             saveStatusMsg.textContent =
                 'Salvando pontuação...';
         }
 
-        if (gameoverModal) {
-            gameoverModal.classList.add('active');
-        }
+        fetch(
+            'salvar_ranking.php',
+            {
+                method: 'POST',
 
-        salvarPontuacao();
-    }
+                headers: {
+                    'Content-Type':
+                        'application/json'
+                },
 
-    // ==========================================
-    // SALVAR PONTUAÇÃO NO MYSQL
-    // ==========================================
+                body: JSON.stringify({
 
-    function salvarPontuacao() {
+                    nome:
+                        currentPlayer ||
+                        'Jogador Anônimo',
 
-        fetch('salvar_ranking.php', {
+                    personagem:
+                        currentCharacter,
 
-            method: 'POST',
+                    pontos:
+                        score
+                })
+            }
+        )
 
-            headers: {
-                'Content-Type':
-                    'application/json'
-            },
+        .then(function (response) {
 
-            body: JSON.stringify({
+            if (!response.ok) {
+                throw new Error(
+                    'Erro ao salvar pontuação.'
+                );
+            }
 
-                nome: currentPlayer,
-
-                personagem: currentCharacter,
-
-                pontos: score
-            })
+            return response.json();
         })
 
-        .then(response => response.json())
+        .then(function (data) {
 
-        .then(data => {
-
-            if (data.status === 'success') {
+            if (
+                data.status ===
+                'success'
+            ) {
 
                 if (saveStatusMsg) {
-
                     saveStatusMsg.textContent =
-                        'Pontuação salva!';
+                        'Pontuação salva no ranking!';
                 }
 
-                carregarRanking();
+                if (data.ranking) {
+                    mostrarRanking(
+                        data.ranking
+                    );
+                }
 
             } else {
 
                 if (saveStatusMsg) {
-
                     saveStatusMsg.textContent =
                         'Não foi possível salvar a pontuação.';
                 }
             }
         })
 
-        .catch(error => {
+        .catch(function (error) {
 
-            console.error(error);
+            console.error(
+                'Erro ao salvar ranking:',
+                error
+            );
 
             if (saveStatusMsg) {
-
                 saveStatusMsg.textContent =
                     'Erro ao salvar pontuação.';
             }
         });
     }
 
-    // ==========================================
+    // ================================
     // CARREGAR RANKING
-    // ==========================================
+    // ================================
 
     function carregarRanking() {
 
-        fetch('obter_ranking.php')
+        if (!rankingBody) {
+            return;
+        }
 
-            .then(response => response.json())
+        rankingBody.innerHTML = `
+            <tr>
+                <td colspan="4">
+                    Carregando ranking...
+                </td>
+            </tr>
+        `;
 
-            .then(data => {
+        fetch(
+            'obter_ranking.php'
+        )
 
-                if (data.status === 'success') {
+        .then(function (response) {
 
-                    mostrarRanking(data.ranking);
-                }
-            })
+            if (!response.ok) {
+                throw new Error(
+                    'Erro ao acessar o ranking.'
+                );
+            }
 
-            .catch(error => {
+            return response.json();
+        })
 
-                console.error(error);
-            });
+        .then(function (data) {
+
+            if (
+                data.status ===
+                'success'
+            ) {
+
+                mostrarRanking(
+                    data.ranking || []
+                );
+
+            } else {
+
+                rankingBody.innerHTML = `
+                    <tr>
+                        <td colspan="4">
+                            Não foi possível carregar o ranking.
+                        </td>
+                    </tr>
+                `;
+            }
+        })
+
+        .catch(function (error) {
+
+            console.error(
+                'Erro no ranking:',
+                error
+            );
+
+            rankingBody.innerHTML = `
+                <tr>
+                    <td colspan="4">
+                        Erro ao carregar ranking.
+                    </td>
+                </tr>
+            `;
+        });
     }
 
-    // ==========================================
+    // ================================
     // MOSTRAR RANKING
-    // ==========================================
+    // ================================
 
     function mostrarRanking(ranking) {
 
@@ -639,52 +792,66 @@ document.addEventListener('DOMContentLoaded', () => {
 
         rankingBody.innerHTML = '';
 
-        ranking.forEach((item, index) => {
+        ranking.forEach(
+            function (item, index) {
 
-            const linha =
-                document.createElement('tr');
+                const linha =
+                    document.createElement('tr');
 
-            const posicao =
-                index === 0
-                    ? '🥇 1º'
-                    : index === 1
-                        ? '🥈 2º'
-                        : index === 2
-                            ? '🥉 3º'
-                            : `${index + 1}º`;
+                const posicao =
+                    index === 0
+                        ? '🥇 1º'
+                        : index === 1
+                            ? '🥈 2º'
+                            : index === 2
+                                ? '🥉 3º'
+                                : `${index + 1}º`;
 
-            const nome =
-                document.createElement('td');
+                const pos =
+                    document.createElement('td');
 
-            nome.innerHTML =
-                `<strong>${escapeHTML(item.nome)}</strong>`;
+                pos.textContent =
+                    posicao;
 
-            const personagem =
-                document.createElement('td');
+                pos.className =
+                    'ranking-pos';
 
-            personagem.textContent =
-                formatCharacter(
-                    item.personagem
+                const nome =
+                    document.createElement('td');
+
+                const nomeSeguro =
+                    escapeHTML(
+                        item.nome ||
+                        'Jogador Anônimo'
+                    );
+
+                nome.innerHTML =
+                    `<strong>${nomeSeguro}</strong>`;
+
+                const personagem =
+                    document.createElement('td');
+
+                personagem.textContent =
+                    formatCharacter(
+                        item.personagem
+                    );
+
+                const pontos =
+                    document.createElement('td');
+
+                pontos.textContent =
+                    `${Number(item.pontos) || 0} pts`;
+
+                linha.appendChild(pos);
+                linha.appendChild(nome);
+                linha.appendChild(personagem);
+                linha.appendChild(pontos);
+
+                rankingBody.appendChild(
+                    linha
                 );
-
-            const pontos =
-                document.createElement('td');
-
-            pontos.textContent =
-                `${Number(item.pontos) || 0} pts`;
-
-            const pos =
-                document.createElement('td');
-
-            pos.textContent = posicao;
-
-            linha.appendChild(pos);
-            linha.appendChild(nome);
-            linha.appendChild(personagem);
-            linha.appendChild(pontos);
-
-            rankingBody.appendChild(linha);
-        });
+            }
+        );
 
         if (ranking.length === 0) {
 
@@ -698,9 +865,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // ==========================================
+    // ================================
     // SEGURANÇA DO NOME
-    // ==========================================
+    // ================================
 
     function escapeHTML(text) {
 
@@ -708,208 +875,230 @@ document.addEventListener('DOMContentLoaded', () => {
             document.createElement('div');
 
         div.textContent =
-            text || '';
+            text;
 
         return div.innerHTML;
     }
 
-    // ==========================================
-    // NOME DO PERSONAGEM
-    // ==========================================
-
-    function formatCharacter(value) {
-
-        const nome =
-            String(value || 'monica')
-                .toLowerCase();
-
-        if (nome === 'magali') {
-            return 'Magali';
-        }
-
-        if (
-            nome === 'cascao' ||
-            nome === 'cascão'
-        ) {
-            return 'Cascão';
-        }
-
-        return 'Mônica';
-    }
-
-    // ==========================================
-    // BOTÃO INICIAR
-    // ==========================================
+    // ================================
+    // INICIAR PELO FORMULÁRIO
+    // ================================
 
     if (startForm) {
 
         startForm.addEventListener(
             'submit',
-            function(event) {
+            function (event) {
 
                 event.preventDefault();
 
                 const nome =
-                    playerInput.value.trim();
+                    playerInput
+                        ? playerInput.value.trim()
+                        : '';
 
                 if (!nome) {
 
-                    playerInput.focus();
+                    if (playerInput) {
+                        playerInput.focus();
+                    }
 
                     return;
                 }
 
-                currentPlayer = nome;
+                currentPlayer =
+                    nome;
 
-                localStorage.setItem(
-                    'turma_jump_player',
-                    nome
-                );
+                currentCharacter =
+                    getSelectedCharacter();
 
-                // Mostra o nome do jogador no jogo
                 if (hudPlayerName) {
-                    hudPlayerName.textContent = currentPlayer;
+                    hudPlayerName.textContent =
+                        currentPlayer;
                 }
 
-                startModal.classList.remove('active');
+                setPlayerImage();
 
                 startGame();
             }
         );
     }
 
-    // ==========================================
+    // ================================
     // VER RANKING
-    // ==========================================
+    // ================================
 
     if (btnViewRanking) {
 
         btnViewRanking.addEventListener(
             'click',
-            function() {
+            function () {
 
                 carregarRanking();
 
-                startModal.classList.remove(
-                    'active'
-                );
+                if (startModal) {
+                    startModal.classList.remove(
+                        'active'
+                    );
+                }
 
-                gameoverModal.classList.add(
-                    'active'
-                );
+                if (gameoverModal) {
+                    gameoverModal.classList.add(
+                        'active'
+                    );
+                }
             }
         );
     }
 
-    // ==========================================
+    // ================================
     // JOGAR NOVAMENTE
-    // ==========================================
+    // ================================
 
     if (btnRestart) {
 
         btnRestart.addEventListener(
             'click',
-            function() {
+            function () {
 
-                gameoverModal.classList.remove(
-                    'active'
-                );
+                if (gameoverModal) {
+                    gameoverModal.classList.remove(
+                        'active'
+                    );
+                }
 
                 startGame();
             }
         );
     }
 
-    // ==========================================
+    // ================================
     // TROCAR JOGADOR
-    // ==========================================
+    // ================================
 
     if (btnChangePlayer) {
 
         btnChangePlayer.addEventListener(
             'click',
-            function() {
+            function () {
 
-                gameoverModal.classList.remove(
-                    'active'
-                );
+                isPlaying = false;
 
-                startModal.classList.add(
-                    'active'
-                );
+                clearInterval(scoreLoop);
 
-                playerInput.value = '';
+                clearTimeout(gameLoop);
 
-                playerInput.focus();
+                if (gameBoard) {
+                    gameBoard.classList.remove(
+                        'running'
+                    );
+                }
+
+                if (gameoverModal) {
+                    gameoverModal.classList.remove(
+                        'active'
+                    );
+                }
+
+                if (startModal) {
+                    startModal.classList.add(
+                        'active'
+                    );
+                }
+
+                if (playerInput) {
+                    playerInput.value = '';
+                    playerInput.focus();
+                }
             }
         );
     }
 
-    // ==========================================
+    // ================================
+    // SELEÇÃO DE PERSONAGEM
+    // ================================
+
+    const characterCards =
+        document.querySelectorAll(
+            '.char-card'
+        );
+
+    characterCards.forEach(
+        function (card) {
+
+            card.addEventListener(
+                'click',
+                function () {
+
+                    characterCards.forEach(
+                        function (item) {
+
+                            item.classList.remove(
+                                'active'
+                            );
+                        }
+                    );
+
+                    card.classList.add(
+                        'active'
+                    );
+                }
+            );
+        }
+    );
+
+    // ================================
     // TECLADO
-    // ==========================================
+    // ================================
 
     document.addEventListener(
         'keydown',
-        function(event) {
+        function (event) {
 
             if (
-                event.code === 'Space' ||
-                event.code === 'ArrowUp'
+                event.code === 'Space'
             ) {
 
-                if (isPlaying) {
+                event.preventDefault();
 
-                    event.preventDefault();
-
-                    jump();
-                }
+                jump();
             }
         }
     );
 
-    // ==========================================
+    // ================================
     // CLIQUE PARA PULAR
-    // ==========================================
+    // ================================
 
     if (gameBoard) {
 
         gameBoard.addEventListener(
             'click',
-            function() {
+            function (event) {
 
-                if (isPlaying) {
-                    jump();
+                if (
+                    event.target.closest(
+                        'button'
+                    )
+                ) {
+                    return;
                 }
+
+                jump();
             }
         );
     }
 
-    // ==========================================
-    // RECUPERAR NOME SALVO
-    // ==========================================
-
-    if (playerInput) {
-
-        const nomeSalvo =
-            localStorage.getItem(
-                'turma_jump_player'
-            );
-
-        if (nomeSalvo) {
-
-            playerInput.value =
-                nomeSalvo;
-        }
-    }
-
-    // ==========================================
+    // ================================
     // CONFIGURAÇÃO INICIAL
-    // ==========================================
+    // ================================
 
     currentCharacter =
         getSelectedCharacter();
 
     setPlayerImage();
 
+    updateWorld();
+
 });
+
