@@ -40,22 +40,40 @@ try {
                 <span class="label">PONTOS:</span>
                 <span class="value" id="score-display">0</span>
             </div>
+
+            <div class="world-info">
+                <span class="label">MUNDO:</span>
+                <span class="value" id="world-display">1</span>
+            </div>
         </header>
 
         
-        <main class="game-board" id="game-board">
-            <div class="clouds" id="clouds">☁️</div>
-            <div class="character" id="player-char">👧🏻</div>
+    <main class="game-board" id="game-board">
+
+        <div class="clouds" id="clouds">☁️</div>
+
+            <div class="character" id="player-char">
+                <img src="assets/monica.png" alt="Mônica">
+            </div>
+
             <div class="obstacle" id="obstacle">🧪</div>
-            <img src="assets/clouds.png" class="clouds" alt="Nuvens">
-            <img src="assets/Cascão.png" class="cascão" alt="Cascão">
-            <img src="assets/Magali.png" class="magali" alt="Magali">
-            <img src="assets/monica.png" class="monica" alt="Mônica">
-            <img src="assets/pipe.png" class="pipe" alt="Cano">
-            <img src="assets/moeda.png" class="coin" id="coin" alt="Moeda Bônus">
-            <span class="jump-tip" id="jump-tip">Pressione ESPAÇO ou clique para pular</span>
-        </main>
-    </div>
+
+                <img src="assets/clouds.png" class="clouds" alt="Nuvens">
+
+                <img src="assets/pipe.png" class="pipe" alt="Cano">
+
+                <img src="assets/moeda.png" class="coin" id="coin" alt="Moeda Bônus">
+
+                <div class="game-obstacle" id="game-obstacle">
+                    <img src="assets/pedra.png" alt="Pedra">
+                </div>
+
+                <span class="jump-tip" id="jump-tip">
+                    Pressione ESPAÇO ou clique para pular
+                </span>
+        </div>
+    </main>
+        
 
     <!-- 1. TELA DE INÍCIO / INSERIR NOME E SELECIONAR PERSONAGEM -->
     <div class="modal-overlay active" id="start-modal">
